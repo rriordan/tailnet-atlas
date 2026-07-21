@@ -1,0 +1,103 @@
+schema_version: 1
+
+dashboard:
+  title: Tailnet Atlas
+  bind_host: 127.0.0.1
+  port: 8787
+  base_path: /
+  refresh_seconds: 30
+  health_interval_seconds: 30
+  health_timeout_seconds: 4
+  theme: system
+
+tailnet:
+  dns_suffix: example-tailnet.ts.net
+  local_device: atlas-host
+  detection_source: automatic
+
+devices:
+  - id: atlas-host
+    display_name: Atlas Host
+    machine_name: atlas-host
+    dns_name: atlas-host.example-tailnet.ts.net
+    tailscale_ips:
+      - 100.64.0.10
+    os: linux
+    visible: true
+    pinned: true
+
+  - id: workstation
+    display_name: Workstation
+    machine_name: workstation
+    dns_name: workstation.example-tailnet.ts.net
+    tailscale_ips:
+      - 100.64.0.20
+    os: windows
+    visible: true
+    pinned: false
+
+services:
+  - id: example-agent
+    name: Example Agent
+    description: Private AI agent interface
+    category: AI and Agents
+    device: atlas-host
+    scheme: http
+    port: 8080
+    path: /
+    favorite: true
+    tags:
+      - ai
+      - agent
+    source: manual
+    runtime: unknown
+    runtime_metadata: {}
+    health:
+      enabled: true
+      method: GET
+      path: /
+      follow_redirects: true
+      tls_verify: true
+
+  - id: example-model-server
+    name: Example Model Server
+    description: Local model API
+    category: Local AI
+    device: workstation
+    scheme: http
+    port: 1234
+    path: /
+    favorite: false
+    tags:
+      - llm
+      - inference
+    source: manual
+    runtime: unknown
+    runtime_metadata: {}
+    health:
+      enabled: true
+      method: GET
+      path: /v1/models
+      follow_redirects: true
+      tls_verify: true
+
+  - id: example-authenticated-app
+    name: Example Authenticated App
+    description: A reachable service that requires login
+    category: Infrastructure
+    device: atlas-host
+    scheme: https
+    port: 8443
+    path: /
+    favorite: false
+    tags:
+      - admin
+    source: manual
+    runtime: unknown
+    runtime_metadata: {}
+    health:
+      enabled: true
+      method: GET
+      path: /
+      follow_redirects: true
+      tls_verify: true
